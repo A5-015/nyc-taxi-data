@@ -103,3 +103,5 @@ venv.bak/
 # mypy
 .mypy_cache/
 .DS_Store
+datasets/nyc.2017-01.csv
+datasets/nyc_database.db
