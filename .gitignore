@@ -106,3 +106,4 @@ venv.bak/
 datasets/nyc.2017-01.csv
 datasets/nyc_database.db
 datasets/nyc.2018-01.csv
+datasets/~$weather_data.xlsx
