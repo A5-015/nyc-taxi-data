@@ -1,4 +1,6 @@
-\documentclass[journal]{IEEEtran}
+\documentclass[journal, 12pt]{IEEEtran}
+%\usepackage[a4paper, total={6in, 8in}]{geometry}
+\raggedbottom
 
 % *** CITATION PACKAGES ***
 %
@@ -9,10 +11,12 @@
 \graphicspath{ {./images/} }
 \usepackage{wrapfig}
 \usepackage{xcolor}
-
-
+\usepackage{graphicx, caption, subcaption}
+\usepackage{subfig}
+\usepackage{graphicx,subcaption}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{graphicx}
 
 \usepackage{lipsum}
 
@@ -39,9 +43,8 @@
 \newcommand{\cc}[1]{\texttt{#1}}
 
 
-\usepackage{multicol} 
-
-\raggedbottom
+\onecolumn
+\renewcommand{\baselinestretch}{1.1} 
 
 \begin{document}
 
@@ -52,7 +55,7 @@
 \pagenumbering{arabic}
 \setcounter{page}{1}
 
-\title{{\large Mini Project 3: Predicting Ridership and Hottest Pickup Zones in January Based on Weather Data}}
+\title{{\large Mini Project 3: Predicting Ridership and Hottest Pickup Zones in January \\ Based on Weather Data}}
 
 \author{ENGR-UH 4560 Machine Learning, Fall 2019\\
 \medskip
@@ -61,7 +64,7 @@ Nishant Aswani,~\IEEEmembership{nsa325@nyu.edu}}% <-this % stops a space
 
 
 % The paper headers
-\markboth{Simsek, Aswani, ENGR-UH 4560 Selected Topics in  Information and Computational Systems Machine Learning, Fall 2019}%
+\markboth{Simsek, Aswani, ENGR-UH 4560 Machine Learning, Fall 2019}%
 {}
 
 % make the title area
@@ -70,7 +73,9 @@ Nishant Aswani,~\IEEEmembership{nsa325@nyu.edu}}% <-this % stops a space
 % As a general rule, do not put math, special symbols or citations
 % in the abstract or keywords.
 \begin{abstract}
-for the airplane
+With the rapid development of modern cities, everyday more and more people use taxicabs. Coordinating taxicabs in the city and meeting the demand of the passengers is real world a problem that needs to be addressed in the New York City. Due to its complex structure, it is a problem that is suitable for using Machine Learning. In this project we aimed to create a model for the yellow taxicabs in New York City that the taxi service providers can predict the number of pickups in a location in New York City based on the weather conditions, pick-up location and the day of the week. After the experimentation process, it is found that XGBoost algorithm performed the best with a mean absolute percentage error of 79.92\% and Random Forest performed worst with a mean absolute percentage error of 82.58\%.
+
+
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%
@@ -78,10 +83,13 @@ for the airplane
 %%%%%%%%%%%%%%%%%%
 \section{Introduction}
 \subsection{Research Motivation}
-{\color{blue} for the airplane}
+\noindent A taxicab (or taxi as commonly known) is a private type of vehicle, where passengers decide on the pick-up and drop-off locations, as opposed to the public transportation vehicles. As a result, meeting the demand of the passengers by carefully distributing taxi vehicles around a crowded city like New York is an important issue. If there is an high demand in a certain part of the city, taxi service providers need to be able provide more vehicles to meet the demand. This would both increase the utilization of the available taxi resources and decrease the wait times of the passengers in return.\\ 
+
+\noindent These being said, there are many different variables that play a role in people's decision to take a taxi ride instead of walking in the streets or using the subway. Some of these variables can be the price of the transportation vehicle, time of the day, day of the week, proximity of the stations or weather conditions. Therefore, this is a great problem to utilize Machine Learning techniques to figure out the complex relationships between these variables and the human nature. By modelling this complex relationship, taxi service providers can start making predictions for the future and provide a better service for their customers while making more profit. Thus, we want to solve the real world problem about strategically distributing taxicabs around the New York City by predicting number of pick-ups based on the \textit{location} and \textit{weather conditions}. By this way, taxi drivers can focus more on the locations with higher pick-up counts to decrease passenger waiting times while utilizing most of the taxi resource available and making more profit.
 
 \subsection{Research Objective}
-{\color{blue} for the airplane}
+\noindent In this project, the New York City taxi data provided by New York City government was used in conjunction with the historical daily New York City weather forecast provided by Weather Underground company. As mentioned before, it is important for a city to cleverly distribute the taxi services and this projects intends to ease the taxi distribution. The project aims to create a Machine Learning model that takes information regarding day of the week, weather conditions, and the location for the pickup, while predicting the pickup frequency for the given location, as an output. As a result, both taxi service providers can locate the crowded spots in the city while+++ passengers can locate the nearest least crowded neighborhood in the city. We aim to maximize the taxicab resourced utilized while minimizing the passenger wait times.
+
 
 \subsection{Scoping the Project}
 \noindent Having plotted the pickup location heatmap, we decided to limit our exploration to Manhattan. Figure \ref{fig:heatmap}, plotted with a random subset of data, shows Manhattan to have the hottest pickup locations. Although not visible below, another popular pickup area is the airports. However, given our focus on weather's effects, we deemed it was appropriate to leave airports out, as taxi pickups are most likely independent of weather conditions.\\
@@ -89,28 +97,24 @@ for the airplane
 \begingroup
     \centering
     %width=\columnwidth
-    \includegraphics[width=\columnwidth]{images/heatmap.png}
+    \includegraphics[width=0.45\columnwidth]{images/heatmap.png}
     \captionof{figure}{Pickup frequency by zones}
     \label{fig:heatmap}
     \medskip
 \endgroup
 
-\noindent We chose to pursue this idea after visualizing the timeseries pattern of precipitation against the pickup counts. Figures \ref{fig:2017_rain_count} and \ref{fig:2018_rain_count} show promising correlations between ridership and precipitation on days of extreme weather conditions.
+\noindent We chose to pursue this idea after visualizing the timeseries pattern of precipitation against the pickup counts. Figures below show promising correlations between ridership and precipitation on days of extreme weather conditions.
+
 
 \begingroup
     \centering
-    %width=\columnwidth
-    \includegraphics[width=\columnwidth]{report/images/2017_rain_count.png}
-    \captionof{figure}{Precipitation vs. pickup counts in 2017}
-    \label{fig:2017_rain_count}
     \medskip
-\endgroup
-\begingroup
-    \centering
     %width=\columnwidth
-    \includegraphics[width=\columnwidth]{report/images/2018_rain_count.png}
-    \captionof{figure}{Precipitation vs. pickup counts in 2018}
-    \label{fig:2018_rain_count}
+    \subfloat{{\includegraphics[width=0.45\columnwidth]{report/images/2017_rain_count.png} }}%
+    \qquad
+    \subfloat{{\includegraphics[width=0.45\columnwidth]{report/images/2018_rain_count.png} }}%
+    \caption{Precipitation vs. pickup counts in 2017 (left) and 2018 (right)}%
+    \label{fig:curves}%
     \medskip
 \endgroup
 
@@ -124,23 +128,27 @@ for the airplane
 
 \subsection{Checking for Anomalies in TLC Data}
 
-\noindent Once it was confirmed that there were no null values present in the 2017 and 2018 January dataset, we selected a {\color{red} 1\% fraction} of the dataset to build our code with. We then sorted and reindexed the data to obtain a dataframe of purely January datapoints, removing stray datapoints from different months or years.\\
+\noindent Once it was confirmed that there were no null values present in the 2017 and 2018 January dataset, we selected a 80\% fraction of the dataset to build our code with. We then sorted and reindexed the data to obtain a dataframe of purely January datapoints, removing stray datapoints from different months or years.\\
 
-\noindent To aid in finding unreasonable data, we turned to the Adopted Rules of the Taxi and Limousine Comission (TLC). The maximum trip duration is 12 hours. Hence, we iterated through all columns to determine the trip duration by subtracting pickup time from dropoff time. Any duration greater than 12 hours {\color{blue} or in negative time} was deemed to be garbage and was removed from the dataset. In each iteration we also calculated the speed and removed all results with values less than 0 or greater than 90. Whiel\\
+\noindent To aid in finding unreasonable data, we turned to the Adopted Rules of the Taxi and Limousine Comission (TLC). The maximum trip duration is 12 hours. Hence, we iterated through all columns to determine the trip duration by subtracting pickup time from dropoff time. Any duration greater than 12 hours (or in negative time) was deemed to be garbage and was removed from the dataset due to the regulation that was set by New York City government. In each iteration we also calculated the speed and removed all results with values less than 0 or greater than 90 miles per hours\\
 
 \noindent For the remaining columns, such as \cc{total\_amount} and \cc{extra}, all rows with values less than zero were removed. 
 
 \subsection{Shapefile Data}
 
-\noindent Having little experience with shapefiles, we relied on functions from an existing machine learning project \cite{shapefile} to manipualate the shapefile and produce maps with a pick up heatmap. 
+\noindent Having little experience with shapefiles, we relied on functions from an existing machine learning project to manipualate the shapefile and produce maps with a pick up heatmap. 
 
 \subsection{Weather Data}
 
 \noindent Despite being relatively simple data, we ran into some trouble obtaining weather data for New York. As we had decided to focus on Manhattan, we found it fit to select a weather station there and select data between 2017 and 2018.\\
 
-\noindent {\color{blue} Add details about obtaining data}\\
+\noindent The data was obtained from the Weather Underground company website using their custom history viewing tool. Later, the data from the website was copied into a spreadsheet for preparing the data set. After cleaning the the copied data, an CSV version of the data set was created and imported. \\
 
-\noindent Examining our dataset, we found null values for some days. Instead of removing them, we made the decision to linearly interpolate the data so as not to render corresponding values in our taxi dataframe unusable. Next, we combined the date, month, and year columns to produce a datetime column. In order to correspond the weather data with the TLC data, we used the \cc{pd.to\_datetime} method to obtain an indexable column. Using this column, we then merged  the relevant rain, average temperature, and average humidity data into the main dataframe.
+\noindent Examining our dataset, we found null values for some days. Instead of removing them, we made the decision to linearly interpolate the data so as not to render corresponding values in our taxi dataframe unusable. Additionally, some of the values in the precipitation column were also "T", instead of numerical values. We deleted the rows with invalid precipitation data but it was not enough to use the weather dataset with the project. Pandas was reading the index column as an object rather than an float value. Objects can be anything and float values are needed to to work with Machine Learning algorithms. Finally, casting the precipitation column to string and later to float gave us the results we needed to run the algorithms.\\
+
+
+
+\noindent Next, we combined the date, month, and year columns to produce a datetime column. In order to correspond the weather data with the TLC data, we used the \cc{pd.to\_datetime} method to obtain an indexable column. Using this column, we then merged  the relevant rain, average temperature, and average humidity data into the main dataframe.
 
 %%%%%%%%%%%%%%%%%
 %% Methodology %%
@@ -149,41 +157,34 @@ for the airplane
 
 \subsection{Data Visualization}
 
-\noindent After meticulous cleaning and data vetting, we produced a dataframe combining taxi and weather data named \cc{nyc\_df}. We used this data to visualize the relation between ridership and the three weather features. Figures \ref{fig:2017_rain_count}, \ref{fig:2018_rain_count}, and the following figures allow for a rough visualization of any timeseries correlations. 
+\noindent After meticulous cleaning and data vetting, we produced a dataframe combining taxi and weather data named \cc{nyc\_df}. We used this data to visualize the relation between ridership and the three weather features. The following figures allow for a rough visualization of any time series correlations. \\
 
 \begingroup
     \centering
-    %width=\columnwidth
-    \includegraphics[width=\columnwidth]{report/images/2017_temp_count.png}
-    \captionof{figure}{Average temperature vs. pickup counts in 2017}
-    \label{fig:2017_temp_count}
     \medskip
-\endgroup
-\begingroup
-    \centering
     %width=\columnwidth
-    \includegraphics[width=\columnwidth]{report/images/2017_temp_count.png}
-    \captionof{figure}{Average temperature vs. pickup counts in 2018}
-    \label{fig:2018_temp_count}
+    \subfloat{{\includegraphics[width=0.45\columnwidth]{report/images/2017_temp_count.png} }}%
+    \qquad
+    \subfloat{{\includegraphics[width=0.45\columnwidth]{report/images/2017_temp_count.png} }}%
+    \caption{Average temperature vs. pickup counts in 2017 and 2018}%
+    \label{fig:curves}%
     \medskip
 \endgroup
 
+
+
 \begingroup
     \centering
+    \medskip
     %width=\columnwidth
-    \includegraphics[width=\columnwidth]{report/images/2017_humidity_count.png}
-    \captionof{figure}{Average humidity vs. pickup counts in 2017}
-    \label{fig:2017_hum_count}
+    \subfloat{{\includegraphics[width=0.45\columnwidth]{report/images/2017_humidity_count.png} }}%
+    \qquad
+    \subfloat{{\includegraphics[width=0.45\columnwidth]{report/images/2017_temp_count.png} }}%
+    \caption{Average humidity vs. pickup counts in 2017 and 2018}%
+    \label{fig:curves}%
     \medskip
 \endgroup
-\begingroup
-    \centering
-    %width=\columnwidth
-    \includegraphics[width=\columnwidth]{report/images/2018_humidity_count.png}
-    \captionof{figure}{Average humidity vs. pickup counts in 2018}
-    \label{fig:2018_hum_count}
-    \medskip
-\endgroup
+
 
 \subsection{Training Preparation}
 
@@ -194,7 +195,7 @@ for the airplane
 \begingroup
     \centering
     %width=\columnwidth
-    \includegraphics[width=\columnwidth]{report/images/train_test_df.png}
+    \includegraphics[width=0.5\columnwidth]{report/images/train_test_df.png}
     \captionof{figure}{Snippets of df\_2017 and df\_2018}
     \label{fig:train_test_df}
     \medskip
@@ -210,7 +211,7 @@ for the airplane
 
 \subsection{Random Forest Regression}
 
-\noindent Random forest regression operates on the idea of multiple decision trees. Each of these trees is built by randomly selecting data (with replacement) to create a bootstrapped dataset \cite{randomforest}. Randomly selected features from the bootstrapped dataset are then used to decide what the root node for the decision tree is. This process is repeated multiple times to obtain a "forest". The data is then used to run down each of the trees and obtain the final answer.\\
+\noindent Random forest regression operates on the idea of multiple decision trees. Each of these trees is built by randomly selecting data (with replacement) to create a bootstrapped dataset. Randomly selected features from the bootstrapped dataset are then used to decide what the root node for the decision tree is. This process is repeated multiple times to obtain a "forest". The data is then used to run down each of the trees and obtain the final answer.\\
 
 \noindent For our experiment we searched through\cc{[10, 40, 80, 160, 320]} to find the optimal number of trees in the forest, seeking to minimize the negative mean absolute error and using 3 folds cross validation. We then trained a model with this and obtained the \cc{mean\_absolute\_errors} and \cc{mean\squared\_errors} for the training and test fits along with the accuracy. We also sought the out of bag error, which simply tests datapoints on trees that did not use those datapoints to build their bootstrap dataset for a score. Moreover, we also extracted the feature importances to view how important weather data was for our experiment when compared with day and location ID. \\
 
@@ -222,7 +223,7 @@ for the airplane
 
 \subsection{KNeighbors Regression}
 
-\noindent We also used the K Nearest Neighbors Regressor to predict the pickup count. The idea of KNR significantly deviates from decision trees, because KNR makes its decisions based on how close another datapoint is numerically. At first thought, this may seem to work because the algorithm would likely correlate location ID and give counts based on how close it is to another location. However, looking at the location file, we see that the IDs are not assigned based geographically. In other words, location 1 is not necessarily geographically close to location 2. 
+\noindent Eventually, we also used the K Nearest Neighbors Regressor to predict the pickup count. The idea of KNR significantly deviates from decision trees, because KNR makes its decisions based on how close another datapoint is numerically. At first thought, this may seem to work because the algorithm would likely correlate location ID and give counts based on how close it is to another location. However, looking at the location file, we see that the IDs are not assigned based geographically. In other words, location 1 is not necessarily geographically close to location 2. 
 
 \subsection{Expectations}
 
@@ -238,6 +239,7 @@ for the airplane
 \subsection{Linear Regression}
 
 \noindent GridSearchCV selected alpha = 130 and produced the following results\\
+
 
 \begingroup
     \medskip
@@ -263,31 +265,15 @@ for the airplane
     \medskip
     \centering
     \def\arraystretch{1.5}
-        \begin{tabular}{ccccc}
+        \begin{tabular}{ccccccc}
             \toprule
-            TrainMAPE & TrainMSE & TestMAPE & TestMSE\\
+            TrainMAPE & TrainMSE & TestMAPE & TestMSE & Train Score & Test Score & OOB Score\\
             \midrule
-            27.94 & 95001 & 77.89 & 585321\\
+            27.94 & 95001 & 77.89 & 585321 & 0.84 & -0.12 & -0.1929\\
             \bottomrule
         \end{tabular}
     \captionof{table}{Random Forest regression results}
     \label{table:}
-    \medskip
-\endgroup
-
-\begingroup
-    \medskip
-    \centering
-    \def\arraystretch{1.5}
-        \begin{tabular}{ccc}
-            \toprule
-            Train Score & Test Score & OOB Score\\
-            \midrule
-            0.84 & -0.12 & -0.1929\\
-            \bottomrule
-        \end{tabular}
-    \captionof{table}{Random Forest regression results}
-    \label{table:fifty_runs}
     \medskip
 \endgroup
 
@@ -296,7 +282,7 @@ for the airplane
 \begingroup
     \centering
     %width=\columnwidth
-    \includegraphics[width=\columnwidth]{report/images/feature_importance_rf.png}
+    \includegraphics[width=0.5\columnwidth]{report/images/feature_importance_rf.png}
     \captionof{figure}{Feature importance in Random Forest Model}
     \label{fig:train_test_df}
     \medskip
@@ -306,6 +292,7 @@ for the airplane
 
 \noindent XGBoost selected for 40 estimators with a tree depth of 1.\\
 
+
 \begingroup
     \medskip
     \centering
@@ -314,7 +301,7 @@ for the airplane
             \toprule
             TrainMAPE & TrainMSE & TestMAPE & TestMAPE & R^2 \\
             \midrule
-            70.55 & 592156.21 & 75.23 & 527607 & -0.013\\
+            70.55 & 592156 & 75.23 & 527607 & -0.013\\
             \bottomrule
         \end{tabular}
     \captionof{table}{}
@@ -325,10 +312,141 @@ for the airplane
 
 \noindent Looking back, we realized that our results were wholly unsatisfactory. Each of the models seemed to perform surprisingly poorly with high error and practically no accuracy. Hence, we returned to re-evaluate the issues we may have caused or any extra analyses we may have been missing.\\
 
+\noindent After some discussion we decided that we had to make the following changes to our approach: 
+
+\begin{itemize}
+  \item We should train on 2017 and 2018, then test with 2019. Again, the model has too little experience to make any meaningful predictions. 
+  \item Perhaps, we can use more than just January for training data. The models have too little experience with the days of the months.
+  \item We can use PCA to find the best weather features, instead of picking certain ones. 
+  \item Our data is organized by day and cross validation is not shuffling the data. Hence, there may be a biased and misleading set of parameters being used for the model, leading to suboptimal performance
+  
+\end{itemize}
+
+\section{Revised Approach}
+
+\noindent After evaluating our options and our project timeframe, we opted to make three changes to our model. We included 2019 data and used a combination of 2017 and 2018 for training, while using 2019 for testing. We added a feature called day of the week, under the assumption that taxi data may be correlated with what day of the week is because of a cyclic pattern. Finally, we updated our 3 cross fold validation to shuffle the data. We also included results from the KNR approach to see if it fared better than the other models.\\
+
+\subsection{Linear Regression}
+\noindent GridSearchCV selected alpha = 1e-14 and produced the following results\\
+
+
+\begingroup
+    \medskip
+    \centering
+    \def\arraystretch{1.5}
+        \begin{tabular}{ccccc}
+            \toprule
+            TrainMAPE & TrainMSE & TestMAPE & TestMSE & R^2 \\
+            \midrule
+            71.80 & 1410132 & 81.74 & 1046655 & -0.075\\
+            \bottomrule
+        \end{tabular}
+    \captionof{table}{Linear regression results after revisions}
+    \label{table:}
+    \medskip
+\endgroup
+
+
+\subsection{Random Forest Regression} 
+
+\noindent GridSearchCV selected for 400 trees.
+
+\begingroup
+    \medskip
+    \centering
+    \def\arraystretch{1.5}
+        \begin{tabular}{cccccCC}
+            \toprule
+            TrainMAPE & TrainMSE & TestMAPE & TestMSE &  Train Score & Test Score & OOB Score\\
+            \midrule
+            27.92 & 217035 & 82.58 & 1112606 & 0.84 & -0.14 & -0.12\\
+            \bottomrule
+        \end{tabular}
+    \captionof{table}{Random Forest regression results after revisions}
+    \label{table:}
+    \medskip
+\endgroup
+
+
+
+\begingroup
+    \centering
+    %width=\columnwidth
+    \includegraphics[width=0.5\columnwidth]{report/images/rev_feature_importance_rf.png}
+    \captionof{figure}{Feature importance in Random Forest Model after revisions}
+    \label{fig:train_test_df}
+    \medskip
+\endgroup
+
+\subsection{XGBoost Regression}
+
+\noindent XGBoost selected for 40 estimators with a tree depth of 3.\\
+
+
+\begingroup
+    \medskip
+    \centering
+    \def\arraystretch{1.5}
+        \begin{tabular}{ccccc}
+            \toprule
+            TrainMAPE & TrainMSE & TestMAPE & TestMAPE & R^2 \\
+            \midrule
+            68.98 & 1319462 & 79.92 & 1008289 & -0.035\\
+            \bottomrule
+        \end{tabular}
+    \captionof{table}{}
+    \label{table:fifty_runs}
+    \medskip
+\endgroup
+
+
+\subsection{KNeighbors Regression}
+
+\noindent GridSearch selected for 40 neighbors\\
+
+
+\begingroup
+    \medskip
+    \centering
+    \def\arraystretch{1.5}
+        \begin{tabular}{cccccc}
+            \toprule
+            TrainMAPE & TrainMSE & TestMAPE & TestMAPE & Train Accuracy & Test Accuracy \\
+            \midrule
+            70.06 & 1347247 & 83.80 & 1103577 & 0.059 & -0.13\\
+            \bottomrule
+        \end{tabular}
+    \captionof{table}{}
+    \label{table:fifty_runs}
+    \medskip
+\endgroup
+
+
+\subsection{Comparing Mean Absolute Percentage Error (MAPE)}
+
+\begingroup
+    \centering
+    \medskip
+    %width=\columnwidth
+    \subfloat{{\includegraphics[width=0.45\columnwidth]{report/images/mape.png} }}%
+    \qquad
+    \subfloat{{\includegraphics[width=0.45\columnwidth]{report/images/rev-mape.png} }}%
+    \caption{Test MAPE for all used models}%
+    \label{fig:curves}%
+    \medskip
+\endgroup
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Discussion and Conclusion %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion and Conclusion}
+
+\noindent To our surprise, the revisions we made resulted in increasing the Test MAPE and Train MAPE values. From this we can draw that perhaps in the initial attempt there was overfitting, resulting in a much lower Train MAPE. The increase in Test MAPE may also be a sign implying that there was overfitting in the original attempt, which falsely led to a lower MAPE. We decided to focus on the MAPE metric over accuracy because we were carrying out regression rather than classification. In the case of the latter, data points are placed into discrete bins, where it makes sense to use accuracy. In our case, the model is predicting an output from a range of values, where it is highly likely to never output the exact output. Hence, we use the percentage error as a metric to gauge how close it is to the ideal solution.\\
+
+\noindent Overall, we believe our lackluster results were a combination of too little data and attempting to find a correlation where one does not exist. Other projects have shown that there is some but insignificant correlation between ridership and weather. Despite this, we sought to find a method based on weather data in curiosity to see if it would be possible. Although our results do not verify our claim that it is not possible, they do imply that it is not necessarily a simple task. 
+
+
+
 \printbibliography
 
 
