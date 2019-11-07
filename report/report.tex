@@ -207,13 +207,13 @@ With the rapid development of modern cities, everyday more and more people use t
 
 \noindent Linear regression makes the assumption that there is a linear correlation between the independent and dependent variable. While this may seem easily dismissable, it is interesting to dissect this model. Looking at the data visualizations in the sections above, we noticed that on heavy weather event days, there was lower ridership. Hence, it may not be completely absurd to apply a linear fit to the model. However, because we also include day of the month and location ID as features, it becomes less reasonable to use a linear regression model.\\
 
-\noindent For this implementation we simply used the \cc{squared\_loss} as the loss function and applied a grid search over a range of alpha values, optimizing for negative mean absolute error with 3-cross-fold validation. We then calculated the \cc{mean\_absolute\_errors} and \cc{mean\squared\_errors} for the training and test fits. \\
+\noindent For this implementation we simply used the \cc{squared\_loss} as the loss function and applied a grid search over a range of alpha values, optimizing for negative mean absolute error with 3-cross-fold validation. We then calculated the \cc{mean\_absolute\_errors} and \cc{mean\squared\_errors} for the training and test fits.
 
 \subsection{Random Forest Regression}
 
 \noindent Random forest regression operates on the idea of multiple decision trees. Each of these trees is built by randomly selecting data (with replacement) to create a bootstrapped dataset. Randomly selected features from the bootstrapped dataset are then used to decide what the root node for the decision tree is. This process is repeated multiple times to obtain a "forest". The data is then used to run down each of the trees and obtain the final answer.\\
 
-\noindent For our experiment we searched through\cc{[10, 40, 80, 160, 320]} to find the optimal number of trees in the forest, seeking to minimize the negative mean absolute error and using 3 folds cross validation. We then trained a model with this and obtained the \cc{mean\_absolute\_errors} and \cc{mean\squared\_errors} for the training and test fits along with the accuracy. We also sought the out of bag error, which simply tests datapoints on trees that did not use those datapoints to build their bootstrap dataset for a score. Moreover, we also extracted the feature importances to view how important weather data was for our experiment when compared with day and location ID. \\
+\noindent For our experiment we searched through\cc{[10, 40, 80, 160, 320]} to find the optimal number of trees in the forest, seeking to minimize the negative mean absolute error and using 3 folds cross validation. We then trained a model with this and obtained the \cc{mean\_absolute\_errors} and \cc{mean\squared\_errors} for the training and test fits along with the accuracy. We also sought the out of bag error, which simply tests datapoints on trees that did not use those datapoints to build their bootstrap dataset for a score. Moreover, we also extracted the feature importances to view how important weather data was for our experiment when compared with day and location ID.
 
 \subsection{XGBoost Regression}
 
@@ -505,11 +505,5 @@ With the rapid development of modern cities, everyday more and more people use t
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newpage
-\onecolumn
-%%%%%%%%%%%%%%%%
-%% Appendix %%
-%%%%%%%%%%%%%%%%
-\section{Appendix}
 
 \end{document}
